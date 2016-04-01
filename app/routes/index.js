@@ -1,57 +1,37 @@
 'use strict';
 
 var path = process.cwd();
-var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
+var request = require('request');
+//var UrlHandler = require(path + '/app/controllers/urlHandler.js');
+var response;
 
-module.exports = function (app, passport) {
+module.exports = function(app, passport) {
+  app.route('/')
+    .get(function(req, res) {
+      res.sendFile(path + '/public/index.html');
+    });
+  app.route('/search')
+    .get(function(req, res) {
+      request({
+        url: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ecba3714cd37e87eb8c67afd54700379&tags=image&per_page=10&page=2&format=json&nojsoncallback=1&api_sig=0bafb8ddfe02f0c9be22b0b7f255cfc0',
+        json: true
+      }, function(err, res, json) {
+        if (err) {
+          throw err;
+        }
+        response = json;
+        //res.json(json);
+      });
+      res.send(response);
+    });
 
-	function isLoggedIn (req, res, next) {
-		if (req.isAuthenticated()) {
-			return next();
-		} else {
-			res.redirect('/login');
-		}
-	}
+  /*  app.route('/:id')
+    	.get(urlHandler.getFull)
 
-	var clickHandler = new ClickHandler();
+    app.route('/new/:url(*)') // allow forward slashes in route: http://stackoverflow.com/a/24366031
+    	.get(urlHandler.getShortened)
+    	
+    	app.route('/test/test')
+    	.get(urlHandler.getDrop)*/
 
-	app.route('/')
-		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/index.html');
-		});
-
-	app.route('/login')
-		.get(function (req, res) {
-			res.sendFile(path + '/public/login.html');
-		});
-
-	app.route('/logout')
-		.get(function (req, res) {
-			req.logout();
-			res.redirect('/login');
-		});
-
-	app.route('/profile')
-		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/profile.html');
-		});
-
-	app.route('/api/:id')
-		.get(isLoggedIn, function (req, res) {
-			res.json(req.user.github);
-		});
-
-	app.route('/auth/github')
-		.get(passport.authenticate('github'));
-
-	app.route('/auth/github/callback')
-		.get(passport.authenticate('github', {
-			successRedirect: '/',
-			failureRedirect: '/login'
-		}));
-
-	app.route('/api/:id/clicks')
-		.get(isLoggedIn, clickHandler.getClicks)
-		.post(isLoggedIn, clickHandler.addClick)
-		.delete(isLoggedIn, clickHandler.resetClicks);
 };
