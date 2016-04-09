@@ -1,0 +1,17 @@
+c9 url: https://fcc-image-search-richardsa.c9users.io
+
+start mongodb 
+ mongod --smallfiles
+ 
+run node server
+ node server.js 
+ 
+ npm install --save request
+ http://stackoverflow.com/questions/25183228/make-a-get-request-to-json-api-in-node-js
+
+flickr stuff:
+url construction
+https://www.flickr.com/services/api/misc.urls.html
+
+api search generator
+https://www.flickr.com/services/api/explore/flickr.photos.search
