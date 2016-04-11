@@ -16,12 +16,22 @@ function SearchHandler() {
       '_id': false
     };
     Searches.collection.find({
-    // sort from http://stackoverflow.com/a/20595736
+    
   }, clickProjection).sort({'time': -1}).limit(5).toArray(function(err, docs) {
     if (err) throw err
+    
     res.send(docs);
   })
-
+/*    var x = Searches.collection.find({
+      terms: 1,
+      time: 1,
+      _id: 0
+    }).sort({
+      _id: -1
+    }).limit(5)
+    console.log(x);
+    res.send("yeah bruh");*/
+  };
 
   // function to retrieve json from flickr and return sanitized version for user
   this.getClean = function(req, res) {
@@ -45,11 +55,15 @@ function SearchHandler() {
     } else {
       offset = "&page=1";
     }
+    
     var searchTerm = req.params.searchTerm.split(' ').join('+');
+  
     var url = baseSearchURL + searchTerm + offset;
-    // solution from http://stackoverflow.com/a/16866525
+    
+    //  json: true
     request(url, function(error, response, body) {
       if (!error && response.statusCode == 200) {
+        // from within the callback, write data to response, essentially returning it.
         body = cleanJSON(body);
         res.send(body);
       }
@@ -63,9 +77,10 @@ function SearchHandler() {
 
 
   function cleanJSON(dirtyJSON) {
-    var dirty = JSON.parse(dirtyJSON)
+    var dirty = JSON.parse(dirtyJSON);
     var clean = [];
   
+    
     for (var i = 0; i < dirty.photos.photo.length; i++) {
       var farmID = dirty.photos.photo[i].farm;
       var serverID = dirty.photos.photo[i].server;
@@ -80,8 +95,9 @@ function SearchHandler() {
         "title": title
       };
       clean.push(obj);
+      
     }
-  
+    
     return clean;
   }
 
