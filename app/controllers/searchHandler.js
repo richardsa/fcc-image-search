@@ -19,7 +19,7 @@ function SearchHandler() {
     
   }, clickProjection).limit(5).toArray(function(err, docs) {
     if (err) throw err
-    console.log(docs)
+    console.log("docs " + docs)
     res.send(docs);
   })
 /*    var x = Searches.collection.find({
