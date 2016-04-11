@@ -17,7 +17,7 @@ function SearchHandler() {
     };
     Searches.collection.find({
     
-  }).toArray(function(err, docs) {
+  }, clickProjection).limit(5).toArray(function(err, docs) {
     if (err) throw err
     console.log(docs)
     res.send(docs);
